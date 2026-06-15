@@ -22,9 +22,17 @@ mybatis-plus:
       id-type: auto
   type-aliases-package: com.example.music.entity
 
+#配置秘钥
+jwt:
+  secret: mySecretKey123456789012345678901234567890
+  expiration: 86400000
+
 #检修时移除注释
 #debug: true
 #logging:
 #  level:
 #    org.springframework: DEBUG
 #    com.baomidou: DEBUG
+logging:
+  level:
+    com.example.music: DEBUG

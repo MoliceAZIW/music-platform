@@ -12,6 +12,8 @@ public class User {
     private String username;
     private String password;
     private String nickname;
+    private String email;      // 新增
+    private String bio;        // 新增
     private Integer gender;
     private String hobby;
     private String avatar;
