@@ -10,60 +10,51 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/song")
+@RequestMapping("/songs")
 public class SongController {
 
     @Autowired
     private SongService songService;
 
-    @GetMapping("/page")
+    @GetMapping("")
     public Map<String, Object> pageSong(
-            @RequestParam(defaultValue = "1") Integer pageNum,
-            @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) Integer categoryId) {
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "20") Integer pageSize,
+            @RequestParam(required = false) String keyword
+    ) {
         Map<String, Object> result = new HashMap<>();
-        try {
-            Page<Song> page = songService.getSongPage(pageNum, pageSize, categoryId);
-            result.put("success", true);
-            result.put("message", "查询成功");
-            result.put("data", page);
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", e.getMessage());
-        }
+        Page<Song> pageResult = songService.getSongPage(page, pageSize, keyword);
+        Map<String, Object> data = new HashMap<>();
+        data.put("list", pageResult.getRecords());
+        data.put("total", pageResult.getTotal());
+        data.put("page", pageResult.getCurrent());
+        data.put("pageSize", pageResult.getSize());
+        result.put("data", data);
         return result;
     }
 
     @GetMapping("/{id}")
     public Map<String, Object> getSongById(@PathVariable Long id) {
         Map<String, Object> result = new HashMap<>();
-        try {
-            Song song = songService.getSongById(id);
-            result.put("success", true);
-            result.put("message", "查询成功");
-            result.put("data", song);
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", e.getMessage());
-        }
+        result.put("data", songService.getSongById(id));
         return result;
     }
 
     @GetMapping("/search")
     public Map<String, Object> searchSong(
             @RequestParam String keyword,
-            @RequestParam(defaultValue = "1") Integer pageNum,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
+            @RequestParam(defaultValue = "song") String type,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "20") Integer pageSize
+    ) {
         Map<String, Object> result = new HashMap<>();
-        try {
-            Page<Song> page = songService.searchSongs(keyword, pageNum, pageSize);
-            result.put("success", true);
-            result.put("message", "查询成功");
-            result.put("data", page);
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", e.getMessage());
-        }
+        Page<Song> pageResult = songService.searchSongs(keyword, page, pageSize);
+        Map<String, Object> data = new HashMap<>();
+        data.put("list", pageResult.getRecords());
+        data.put("total", pageResult.getTotal());
+        data.put("page", pageResult.getCurrent());
+        data.put("pageSize", pageResult.getSize());
+        result.put("data", data);
         return result;
     }
 }

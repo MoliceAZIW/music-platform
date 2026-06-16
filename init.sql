@@ -54,3 +54,16 @@ CREATE TABLE `playlist_song` (
                                  KEY `idx_playlist_id` (`playlist_id`),
                                  KEY `idx_song_id` (`song_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `song`
+(`name`, lyricist, composer, lyrics, audio_url, mv_url, mv_description, mv_author, category, cover_url)
+VALUES
+    ('晴天', '周杰伦', '周杰伦', '故事的小黄花，从出生那年就飘着', '/audio/qt.mp3', '/mv/qt.mp4', '校园情歌MV', '周杰伦', '流行', '/cover/qt.jpg'),
+    ('稻香', '周杰伦', '周杰伦', '还记得家是唯一的城堡', '/audio/dx.mp3', '/mv/dx.mp4', '治愈乡村MV', '周杰伦', '治愈', '/cover/dx.jpg'),
+    ('孤勇者', '唐恬', '钱雷', '爱你孤身走暗巷，爱你不跪的模样', '/audio/gyz.mp3', '/mv/gyz.mp4', '动画双城之战主题曲', '陈奕迅', '励志', '/cover/gyz.jpg'),
+    ('七里香', '方文山', '周杰伦', '窗外的麻雀，在电线杆上多嘴', '/audio/qlx.mp3', NULL, NULL, '周杰伦', '流行', '/cover/qlx.jpg');
+
+INSERT INTO `playlist` (user_id, `name`)
+VALUES
+    (1, '周董精选集'),
+    (1, '治愈励志歌单');
