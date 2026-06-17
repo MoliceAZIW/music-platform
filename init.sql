@@ -93,3 +93,6 @@ INSERT INTO `category` (`name`, `description`, `sort_order`) VALUES
                                                                  ('古典', '古典音乐', 7);
 
 SELECT * FROM song WHERE name LIKE '%周杰伦%' OR lyricist LIKE '%周杰伦%';
+
+UPDATE `song` SET `category_id` = 1 WHERE `id` IN (1, 4);
+UPDATE `song` SET `category_id` = 2 WHERE `id` = 2;

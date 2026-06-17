@@ -14,7 +14,7 @@ public class SongService {
     @Autowired
     private SongMapper songMapper;
 
-    public Page<Song> getSongPage(Integer page, Integer pageSize, String keyword, String type)  {
+    public Page<Song> getSongPage(Integer page, Integer pageSize, String keyword, String type,Long categoryId)  {
         LambdaQueryWrapper<Song> wrapper = new LambdaQueryWrapper<>();
         if (StringUtils.hasText(keyword)) {
             // 根据类型构建不同的查询条件
@@ -28,6 +28,10 @@ public class SongService {
                         .or()
                         .like(Song::getLyricist, keyword));
             }
+        }
+        // 分类筛选
+        if (categoryId != null) {
+            wrapper.eq(Song::getCategoryId, categoryId);
         }
         wrapper.orderByDesc(Song::getCreateTime);
 

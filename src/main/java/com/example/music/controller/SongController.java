@@ -20,9 +20,10 @@ public class SongController {
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "song") String type,
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "20") Integer pageSize
+            @RequestParam(defaultValue = "20") Integer pageSize,
+            @RequestParam(required = false) Long categoryId
     ) {
-        Page<Song> pageResult = songService.getSongPage(page, pageSize, keyword, type);
+        Page<Song> pageResult = songService.getSongPage(page, pageSize, keyword, type,categoryId);
         SongPageResponse response = new SongPageResponse(
                 pageResult.getRecords(),
                 pageResult.getTotal(),
@@ -37,9 +38,10 @@ public class SongController {
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "song") String type,
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "20") Integer pageSize
+            @RequestParam(defaultValue = "20") Integer pageSize,
+            @RequestParam(required = false) Long categoryId
     ) {
-        return listSongs(keyword, type, page, pageSize);
+        return listSongs(keyword, type, page, pageSize,categoryId);
     }
 
 
