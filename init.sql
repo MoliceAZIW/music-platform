@@ -96,3 +96,17 @@ SELECT * FROM song WHERE name LIKE '%周杰伦%' OR lyricist LIKE '%周杰伦%';
 
 UPDATE `song` SET `category_id` = 1 WHERE `id` IN (1, 4);
 UPDATE `song` SET `category_id` = 2 WHERE `id` = 2;
+
+ALTER TABLE `playlist` ADD COLUMN `cover_url` varchar(255) DEFAULT NULL;
+ALTER TABLE `playlist` ADD COLUMN `description` varchar(500) DEFAULT NULL;
+
+INSERT INTO playlist_song (playlist_id, song_id)
+VALUES
+    (1, 1),
+    (1, 2),
+    (1, 3),
+    (1, 4);
+INSERT INTO playlist_song (playlist_id, song_id) VALUES (2,1),(2,3);
+INSERT INTO playlist_song (playlist_id, song_id) VALUES (3,2),(3,4);
+INSERT INTO playlist_song (playlist_id, song_id) VALUES (1, 5);
+DELETE FROM playlist_song WHERE playlist_id = 1 AND song_id = 4;
