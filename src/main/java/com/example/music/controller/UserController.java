@@ -28,20 +28,27 @@ public class UserController {
 
     // 注册
     @PostMapping("/auth/register")
-    public Result<AuthResponse> register(@Valid @RequestBody AuthRequest request) {
-        log.info("用户注册：{}", request.getUsername());
-        User user = userService.register(request.getUsername(), request.getPassword(), request.getEmail());
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername());
-        return Result.success(new AuthResponse(user.getId(), user.getUsername(), token));
+    public Result<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
+        try {
+            User user = userService.register(request);
+            RegisterResponse response = new RegisterResponse(user.getId(), user.getUsername());
+            return Result.success(response);
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        }
     }
 
     // 登录
     @PostMapping("/auth/login")
     public Result<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
-        log.info("用户登录：{}", request.getUsername());
-        User user = userService.login(request.getUsername(), request.getPassword());
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername());
-        return Result.success(new AuthResponse(user.getId(), user.getUsername(), token));
+        try {
+            User user = userService.login(request.getUsername(), request.getPassword());
+            String token = jwtUtil.generateToken(user.getId(), user.getUsername());
+            return Result.success(new AuthResponse(user.getId(), user.getUsername(), token));
+        } catch (RuntimeException e) {
+            // 捕获业务异常
+            return Result.error(401, e.getMessage());
+        }
     }
 
     // 获取个人信息

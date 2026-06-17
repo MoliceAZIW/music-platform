@@ -5,9 +5,11 @@ import com.example.music.dto.UserUpdateRequest;
 import com.example.music.entity.User;
 import com.example.music.mapper.UserMapper;
 import com.example.music.service.UserService;
+import com.example.music.dto.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -19,17 +21,21 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public User register(String username, String password, String email) {
+    public User register(RegisterRequest request) {
+        // 校验密码是否一致
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException("密码与确认密码不一致");
+        }
+        // 检查用户名是否已存在
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(User::getUsername, username);
+        wrapper.eq(User::getUsername, request.getUsername());
         if (userMapper.selectCount(wrapper) > 0) {
             throw new RuntimeException("用户名已存在");
         }
         User user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setNickname(username);
-        user.setEmail(email);
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail()); // 可为 null
         userMapper.insert(user);
         return user;
     }
