@@ -17,19 +17,16 @@ public class SongService {
     public Page<Song> getSongPage(Integer page, Integer pageSize, String keyword, String type,Long categoryId)  {
         LambdaQueryWrapper<Song> wrapper = new LambdaQueryWrapper<>();
         if (StringUtils.hasText(keyword)) {
-            // 根据类型构建不同的查询条件
             if ("artist".equals(type)) {
                 wrapper.like(Song::getLyricist, keyword);
             } else if ("album".equals(type)) {
                 wrapper.like(Song::getAlbum, keyword);
             } else {
-                // 默认搜索歌名和作词
                 wrapper.and(w -> w.like(Song::getTitle, keyword)
                         .or()
                         .like(Song::getLyricist, keyword));
             }
         }
-        // 分类筛选
         if (categoryId != null) {
             wrapper.eq(Song::getCategoryId, categoryId);
         }
