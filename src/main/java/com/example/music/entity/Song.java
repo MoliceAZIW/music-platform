@@ -32,4 +32,5 @@ public class Song {
     private String coverUrl;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
+    private Long categoryId;
 }

@@ -1,13 +1,12 @@
 package com.example.music.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.music.entity.Song;
 import com.example.music.mapper.SongMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import java.util.List;
 
 @Service
 public class SongService {
@@ -15,30 +14,29 @@ public class SongService {
     @Autowired
     private SongMapper songMapper;
 
-    public Page<Song> getSongPage(Integer page, Integer pageSize, String keyword) {
-        QueryWrapper<Song> wrapper = new QueryWrapper<>();
+    public Page<Song> getSongPage(Integer page, Integer pageSize, String keyword, String type)  {
+        LambdaQueryWrapper<Song> wrapper = new LambdaQueryWrapper<>();
         if (StringUtils.hasText(keyword)) {
-            wrapper.like("name", keyword)
-                    .or().like("lyricist", keyword);
+            // 根据类型构建不同的查询条件
+            if ("artist".equals(type)) {
+                wrapper.like(Song::getLyricist, keyword);
+            } else if ("album".equals(type)) {
+                wrapper.like(Song::getAlbum, keyword);
+            } else {
+                // 默认搜索歌名和作词
+                wrapper.and(w -> w.like(Song::getTitle, keyword)
+                        .or()
+                        .like(Song::getLyricist, keyword));
+            }
         }
-        wrapper.orderByDesc("create_time");
-
-        Long total = songMapper.selectCount(wrapper);
-        long offset = (long) (page - 1) * pageSize;
-        wrapper.last("LIMIT " + offset + "," + pageSize);
-        List<Song> records = songMapper.selectList(wrapper);
+        wrapper.orderByDesc(Song::getCreateTime);
 
         Page<Song> pageResult = new Page<>(page, pageSize);
-        pageResult.setTotal(total);
-        pageResult.setRecords(records);
-        return pageResult;
+        return songMapper.selectPage(pageResult, wrapper);
     }
 
     public Song getSongById(Long id) {
         return songMapper.selectById(id);
     }
 
-    public Page<Song> searchSongs(String keyword, Integer page, Integer pageSize) {
-        return getSongPage(page, pageSize, keyword);
-    }
 }
