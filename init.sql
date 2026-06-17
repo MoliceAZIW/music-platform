@@ -67,3 +67,29 @@ INSERT INTO `playlist` (user_id, `name`)
 VALUES
     (1, '周董精选集'),
     (1, '治愈励志歌单');
+
+CREATE TABLE IF NOT EXISTS `category` (
+                                          `id` bigint NOT NULL AUTO_INCREMENT,
+                                          `name` varchar(50) NOT NULL COMMENT '分类名称',
+    `description` varchar(255) DEFAULT NULL COMMENT '分类描述',
+    `icon` varchar(255) DEFAULT NULL COMMENT '图标URL',
+    `sort_order` int DEFAULT '0' COMMENT '排序',
+    `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+    `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_name` (`name`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='歌曲分类表';
+
+ALTER TABLE `song` ADD COLUMN `category_id` bigint DEFAULT NULL COMMENT '分类ID';
+ALTER TABLE `song` ADD INDEX `idx_category_id` (`category_id`);
+
+INSERT INTO `category` (`name`, `description`, `sort_order`) VALUES
+                                                                 ('流行', '流行音乐', 1),
+                                                                 ('摇滚', '摇滚音乐', 2),
+                                                                 ('民谣', '民谣音乐', 3),
+                                                                 ('电子', '电子音乐', 4),
+                                                                 ('R&B', '节奏布鲁斯', 5),
+                                                                 ('说唱', '嘻哈说唱', 6),
+                                                                 ('古典', '古典音乐', 7);
+
+SELECT * FROM song WHERE name LIKE '%周杰伦%' OR lyricist LIKE '%周杰伦%';
