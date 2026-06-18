@@ -1,17 +1,14 @@
 package com.example.music.controller;
 
 import com.example.music.common.Result;
-import com.example.music.dto.PlaylistCreateRequest;
-import com.example.music.dto.PlaylistCreateResponse;
-import com.example.music.dto.PlaylistDetailResponse;
-import com.example.music.dto.PlaylistResponse;
-import com.example.music.dto.PlaylistSongOperateRequest;
+import com.example.music.dto.*;
 import com.example.music.service.PlaylistService;
 import com.example.music.service.PlaylistSongService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+
 
 @RestController
 @RequestMapping("/playlists")
@@ -31,13 +28,13 @@ public class PlaylistController {
     }
 
     @GetMapping("/{id}")
-    public Result<PlaylistDetailResponse> getPlaylistDetail(@PathVariable Long id) {
+    public Result<PlaylistDetailVO> getPlaylistDetail(@PathVariable Long id) {
         Long loginUserId = 1L;
-        PlaylistDetailResponse detail = playlistService.getPlaylistDetail(id, loginUserId);
+        PlaylistDetailVO detail = playlistService.getPlaylistDetail(id, loginUserId);
         if (detail == null) {
             return Result.error(404, "歌单不存在或无权限访问");
         }
-        Result<PlaylistDetailResponse> result = Result.success(detail);
+        Result<PlaylistDetailVO> result = Result.success(detail);
         result.setMessage("查询成功");
         return result;
     }
@@ -74,6 +71,31 @@ public class PlaylistController {
             }
             Result<?> result = Result.success(Map.of("success", true));
             result.setMessage("操作成功");
+            return result;
+        } catch (Exception e) {
+            return Result.error(500, e.getMessage());
+        }
+    }
+
+    // 新增：添加第三方歌曲到歌单
+    @PostMapping("/{id}/external-songs")
+    public Result<?> addExternalSong(@PathVariable Long id,
+                                     @RequestBody PlaylistSongAddRequest request) {
+        try {
+            // 验证歌单归属（略，可复用校验逻辑）
+            boolean added = playlistSongService.addExternalSongToPlaylist(
+                    id,
+                    request.getSongId(),
+                    request.getSource(),
+                    request.getName(),
+                    request.getArtist(),
+                    request.getCover()
+            );
+            if (!added) {
+                return Result.error(400, "歌曲已存在于歌单");
+            }
+            Result<?> result = Result.success(Map.of("success", true));
+            result.setMessage("添加成功");
             return result;
         } catch (Exception e) {
             return Result.error(500, e.getMessage());

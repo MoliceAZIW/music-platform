@@ -36,3 +36,9 @@ jwt:
 logging:
   level:
     com.example.music: DEBUG
+
+#第三方接口
+third-party:
+  tencent:
+    base-url: https://api.vkeys.cn/v2/music/tencent
+
