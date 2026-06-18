@@ -110,3 +110,12 @@ INSERT INTO playlist_song (playlist_id, song_id) VALUES (2,1),(2,3);
 INSERT INTO playlist_song (playlist_id, song_id) VALUES (3,2),(3,4);
 INSERT INTO playlist_song (playlist_id, song_id) VALUES (1, 5);
 DELETE FROM playlist_song WHERE playlist_id = 1 AND song_id = 4;
+
+ALTER TABLE playlist_song MODIFY song_id VARCHAR(64);
+
+ALTER TABLE playlist_song ADD COLUMN source VARCHAR(20) DEFAULT 'local' COMMENT 'local:本地, tencent:QQ音乐';
+
+-- 增加第三方额外信息字段
+ALTER TABLE playlist_song ADD COLUMN external_name VARCHAR(200) NULL;
+ALTER TABLE playlist_song ADD COLUMN external_artist VARCHAR(200) NULL;
+ALTER TABLE playlist_song ADD COLUMN external_cover VARCHAR(500) NULL;
