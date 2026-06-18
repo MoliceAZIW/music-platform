@@ -8,4 +8,5 @@ public interface TencentMusicService {
     List<TencentSongDTO> searchSongs(String keyword, int limit);
     String getPlayUrl(String mid, int quality);
     TencentLyricDTO getLyric(String mid);
+    String getMvUrl(String vid);
 }

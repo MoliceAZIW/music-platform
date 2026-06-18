@@ -51,7 +51,7 @@ public class PlaylistSongService {
     }
 
     public boolean addExternalSongToPlaylist(Long playlistId, String songId, String source,
-                                             String name, String artist, String cover) {
+                                             String name, String artist, String cover, String vid) {
         QueryWrapper<PlaylistSong> wrapper = new QueryWrapper<>();
         wrapper.eq("playlist_id", playlistId)
                 .eq("song_id", songId)
@@ -66,6 +66,7 @@ public class PlaylistSongService {
         ps.setExternalName(name);
         ps.setExternalArtist(artist);
         ps.setExternalCover(cover);
+        ps.setExternalVid(vid);  // 新增
         return playlistSongMapper.insert(ps) > 0;
     }
 

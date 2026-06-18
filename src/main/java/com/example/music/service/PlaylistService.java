@@ -93,20 +93,21 @@ public class PlaylistService {
                     continue;
                 }
             } else if ("tencent".equals(relation.getSource())) {
-                // 第三方歌曲
-                String mid = relation.getSongId();
-                vo.setId(mid);   // String 类型
-                vo.setSource("tencent");
-                vo.setTitle(relation.getExternalName());
-                vo.setArtist(relation.getExternalArtist());
-                vo.setCoverUrl(relation.getExternalCover());
-                // 实时获取播放链接
-                String playUrl = tencentMusicService.getPlayUrl(mid, 10);
-                if (playUrl == null) {
-                    playUrl = tencentMusicService.getPlayUrl(mid, 7);
-                }
-                vo.setAudioUrl(playUrl);
+            String mid = relation.getSongId();
+            vo.setId(mid);
+            vo.setSource("tencent");
+            vo.setTitle(relation.getExternalName());
+            vo.setArtist(relation.getExternalArtist());
+            vo.setCoverUrl(relation.getExternalCover());
+            vo.setVid(relation.getExternalVid());  // 新增：传递 vid
+
+            // 实时获取播放链接（保持不变）
+            String playUrl = tencentMusicService.getPlayUrl(mid, 10);
+            if (playUrl == null) {
+                playUrl = tencentMusicService.getPlayUrl(mid, 7);
             }
+            vo.setAudioUrl(playUrl);
+        }
             // 其他来源暂不处理
             if (vo.getTitle() != null) {
                 songList.add(vo);

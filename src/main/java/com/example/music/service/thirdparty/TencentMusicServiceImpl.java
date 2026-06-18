@@ -117,4 +117,9 @@ public class TencentMusicServiceImpl implements TencentMusicService {
             return null;
         }
     }
+    @Override
+    public String getMvUrl(String vid) {
+        // 直接返回 QQ 音乐官方 MV 页面地址
+        return "https://y.qq.com/n/ryqq/mv/" + vid;
+    }
 }

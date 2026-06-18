@@ -11,4 +11,5 @@ public class PlaylistSongAddRequest {
     private String name;            // 第三方歌曲名（冗余）
     private String artist;          // 第三方歌手（冗余）
     private String cover;           // 第三方封面（冗余）
+    private String vid;             // 第三方MVId
 }

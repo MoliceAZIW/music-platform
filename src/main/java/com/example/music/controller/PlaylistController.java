@@ -89,7 +89,8 @@ public class PlaylistController {
                     request.getSource(),
                     request.getName(),
                     request.getArtist(),
-                    request.getCover()
+                    request.getCover(),
+                    request.getVid()
             );
             if (!added) {
                 return Result.error(400, "歌曲已存在于歌单");
