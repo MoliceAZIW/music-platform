@@ -21,4 +21,5 @@ public class PlaylistSong {
     private String externalCover;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime addTime;
+    private String externalVid;
 }

@@ -41,4 +41,13 @@ public class TencentController {
         }
         return Result.success(lyric);
     }
+
+    @GetMapping("/mv/url")
+    public Result<String> getMvUrl(@RequestParam String vid) {
+        String url = tencentMusicService.getMvUrl(vid);
+        if (url == null || url.isEmpty()) {
+            return Result.error(404, "MV 地址不存在");
+        }
+        return Result.success(url);
+    }
 }

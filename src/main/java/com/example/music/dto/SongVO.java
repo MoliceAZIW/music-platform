@@ -12,4 +12,5 @@ public class SongVO {
     private String coverUrl;
     private String audioUrl;
     private String source;      // "local" 或 "tencent"
+    private String vid;         // 第三方MVId
 }
