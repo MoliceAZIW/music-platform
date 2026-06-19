@@ -118,4 +118,18 @@ public class PlaylistController {
             return Result.error(500, e.getMessage());
         }
     }
+    @DeleteMapping("/{id}/external-songs")
+    public Result<?> removeExternalSong(@PathVariable Long id,
+                                        @RequestParam String songId,
+                                        @RequestParam String source) {
+        try {
+            boolean removed = playlistSongService.removeExternalSongFromPlaylist(id, songId, source);
+            if (!removed) {
+                return Result.error(404, "歌单中不存在该第三方歌曲");
+            }
+            return Result.success(Map.of("success", true));
+        } catch (Exception e) {
+            return Result.error(500, e.getMessage());
+        }
+    }
 }
