@@ -33,9 +33,9 @@ jwt:
 #  level:
 #    org.springframework: DEBUG
 #    com.baomidou: DEBUG
-logging:
-  level:
-    com.example.music: DEBUG
+#logging:
+#  level:
+#    com.example.music: DEBUG
 
 #第三方接口
 third-party:

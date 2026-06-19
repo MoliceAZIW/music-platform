@@ -18,7 +18,7 @@ public class PlaylistSongService {
     @Autowired
     private SongMapper songMapper;
 
-    public boolean addSongToPlaylist(Long playlistId, Long songId) {
+    public boolean addSongToPlaylist(Long playlistId, String songId) {
         QueryWrapper<PlaylistSong> wrapper = new QueryWrapper<>();
         wrapper.eq("playlist_id", playlistId).eq("song_id",String.valueOf(songId)).eq("source", "local");
         if (playlistSongMapper.selectCount(wrapper) > 0) {
@@ -30,7 +30,7 @@ public class PlaylistSongService {
         return playlistSongMapper.insert(playlistSong) > 0;
     }
 
-    public boolean removeSongFromPlaylist(Long playlistId, Long songId) {
+    public boolean removeSongFromPlaylist(Long playlistId, String songId) {
         QueryWrapper<PlaylistSong> wrapper = new QueryWrapper<>();
         wrapper.eq("playlist_id", playlistId).eq("song_id", songId);
         return playlistSongMapper.delete(wrapper) > 0;
