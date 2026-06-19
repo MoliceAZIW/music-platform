@@ -56,13 +56,14 @@ public class PlaylistController {
     public Result<?> operatePlaylistSong(@PathVariable Long id, @RequestBody PlaylistSongOperateRequest dto) {
         try {
             boolean flag;
+            String songIdStr = String.valueOf(dto.getSongId());
             if ("add".equals(dto.getAction())) {
-                flag = playlistSongService.addSongToPlaylist(id, dto.getSongId());
+                flag = playlistSongService.addSongToPlaylist(id, songIdStr);
                 if (!flag) {
                     return Result.error(400, "歌曲已存在于歌单");
                 }
             } else if ("remove".equals(dto.getAction())) {
-                flag = playlistSongService.removeSongFromPlaylist(id, dto.getSongId());
+                flag = playlistSongService.removeSongFromPlaylist(id, songIdStr);
                 if (!flag) {
                     return Result.error(400, "歌单内无该歌曲");
                 }
