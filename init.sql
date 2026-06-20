@@ -1,88 +1,111 @@
-CREATE DATABASE IF NOT EXISTS music_platform DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS music_platform
+    DEFAULT CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
 
 USE music_platform;
 
--- 用户表
+-- 1. 用户表 (user)
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
-                        `id` bigint NOT NULL AUTO_INCREMENT,
-                        `username` varchar(50) NOT NULL COMMENT '登录账号',
-                        `password` varchar(255) NOT NULL COMMENT '加密密码',
-                        `nickname` varchar(50) DEFAULT NULL COMMENT '昵称',
-                        `gender` tinyint DEFAULT '0' COMMENT '0未知 1男 2女',
-                        `hobby` varchar(255) DEFAULT NULL COMMENT '爱好',
-                        `avatar` varchar(255) DEFAULT NULL COMMENT '头像URL',
-                        `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+                        `id`           bigint       NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+                        `username`     varchar(50)  NOT NULL                COMMENT '登录账号',
+                        `password`     varchar(255) NOT NULL                COMMENT 'BCrypt 加密密码',
+                        `nickname`     varchar(50)  DEFAULT NULL            COMMENT '昵称',
+                        `email`        varchar(100) DEFAULT NULL            COMMENT '邮箱',
+                        `bio`          varchar(255) DEFAULT NULL            COMMENT '个人简介',
+                        `gender`       tinyint      DEFAULT 0               COMMENT '0未知 1男 2女',
+                        `hobby`        varchar(255) DEFAULT NULL            COMMENT '爱好',
+                        `avatar`       varchar(255) DEFAULT NULL            COMMENT '头像 URL',
+                        `create_time`  datetime     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                        `update_time`  datetime     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                         PRIMARY KEY (`id`),
-                        UNIQUE KEY `uk_username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                        UNIQUE KEY `uk_username` (`username`),
+                        KEY `idx_email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
--- 歌曲表
+
+-- 2. 分类表 (category)
+DROP TABLE IF EXISTS `category`;
+CREATE TABLE `category` (
+                            `id`           bigint       NOT NULL AUTO_INCREMENT COMMENT '分类ID',
+                            `name`         varchar(50)  NOT NULL                COMMENT '分类名称',
+                            `description`  varchar(255) DEFAULT NULL            COMMENT '分类描述',
+                            `icon`         varchar(255) DEFAULT NULL            COMMENT '图标 URL',
+                            `sort_order`   int          DEFAULT 0               COMMENT '排序',
+                            `create_time`  datetime     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                            `update_time`  datetime     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                            PRIMARY KEY (`id`),
+                            UNIQUE KEY `uk_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='歌曲分类表';
+
+
+-- 3. 歌曲表 (song)
+
+DROP TABLE IF EXISTS `song`;
 CREATE TABLE `song` (
-                        `id` bigint NOT NULL AUTO_INCREMENT,
-                        `name` varchar(100) NOT NULL,
-                        `lyricist` varchar(50) DEFAULT NULL COMMENT '作词',
-                        `composer` varchar(50) DEFAULT NULL COMMENT '作曲',
-                        `lyrics` text COMMENT '歌词',
-                        `audio_url` varchar(255) DEFAULT NULL COMMENT '音频地址',
-                        `mv_url` varchar(255) DEFAULT NULL COMMENT 'MV视频地址',
-                        `mv_description` varchar(500) DEFAULT NULL COMMENT 'MV描述',
-                        `mv_author` varchar(100) DEFAULT NULL COMMENT 'MV作者',
-                        `category` varchar(50) DEFAULT NULL COMMENT '分类: 流行/摇滚/民谣等',
-                        `cover_url` varchar(255) DEFAULT NULL COMMENT '封面图',
-                        `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
-                        PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                        `id`              bigint       NOT NULL AUTO_INCREMENT COMMENT '歌曲ID',
+                        `name`            varchar(100) NOT NULL                COMMENT '歌曲名',
+                        `lyricist`        varchar(50)  DEFAULT NULL            COMMENT '作词人',
+                        `composer`        varchar(50)  DEFAULT NULL            COMMENT '作曲人',
+                        `lyrics`          text                                 COMMENT '完整歌词',
+                        `audio_url`       varchar(255) DEFAULT NULL            COMMENT '音频文件 URL',
+                        `mv_url`          varchar(255) DEFAULT NULL            COMMENT 'MV 视频 URL',
+                        `mv_description`  varchar(500) DEFAULT NULL            COMMENT 'MV 描述',
+                        `mv_author`       varchar(100) DEFAULT NULL            COMMENT 'MV 作者',
+                        `category_id`     bigint       DEFAULT NULL            COMMENT '分类ID',
+                        `category`        varchar(50)  DEFAULT NULL            COMMENT '分类名称',
+                        `cover_url`       varchar(255) DEFAULT NULL            COMMENT '封面图 URL',
+                        `create_time`     datetime     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                        PRIMARY KEY (`id`),
+                        KEY `idx_category_id` (`category_id`),
+                        KEY `idx_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='本地歌曲表';
 
--- 歌单表
+
+-- 4. 歌单表 (playlist)
+DROP TABLE IF EXISTS `playlist`;
 CREATE TABLE `playlist` (
-                            `id` bigint NOT NULL AUTO_INCREMENT,
-                            `user_id` bigint NOT NULL COMMENT '所属用户',
-                            `name` varchar(100) NOT NULL,
-                            `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+                            `id`           bigint       NOT NULL AUTO_INCREMENT COMMENT '歌单ID',
+                            `user_id`      bigint       NOT NULL                COMMENT '所属用户ID（外键 → user.id）',
+                            `name`         varchar(100) NOT NULL                COMMENT '歌单名称',
+                            `cover_url`    varchar(255) DEFAULT NULL            COMMENT '封面图 URL',
+                            `description`  varchar(500) DEFAULT NULL            COMMENT '歌单描述',
+                            `create_time`  datetime     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                             PRIMARY KEY (`id`),
                             KEY `idx_user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='歌单主表';
 
--- 歌单-歌曲关联表
+
+
+-- 5. 歌单-歌曲关联表 (playlist_song)
+DROP TABLE IF EXISTS `playlist_song`;
 CREATE TABLE `playlist_song` (
-                                 `id` bigint NOT NULL AUTO_INCREMENT,
-                                 `playlist_id` bigint NOT NULL,
-                                 `song_id` bigint NOT NULL,
-                                 `add_time` datetime DEFAULT CURRENT_TIMESTAMP,
+                                 `id`               bigint       NOT NULL AUTO_INCREMENT COMMENT '关联记录ID',
+                                 `playlist_id`      bigint       NOT NULL                COMMENT '歌单ID',
+                                 `song_id`          varchar(64)  NOT NULL                COMMENT '歌曲ID（本地为数字，第三方为字符串mid）',
+                                 `source`           varchar(20)  DEFAULT 'local'         COMMENT '来源: local/tencent',
+                                 `external_name`    varchar(200) DEFAULT NULL            COMMENT '第三方歌曲名（冗余）',
+                                 `external_artist`  varchar(200) DEFAULT NULL            COMMENT '第三方歌手名（冗余）',
+                                 `external_cover`   varchar(500) DEFAULT NULL            COMMENT '第三方封面图（冗余）',
+                                 `external_vid`     varchar(50)  DEFAULT NULL            COMMENT '第三方 MV 的 vid（冗余）',
+                                 `add_time`         datetime     DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
                                  PRIMARY KEY (`id`),
-                                 UNIQUE KEY `uk_playlist_song` (`playlist_id`,`song_id`),
+                                 UNIQUE KEY `uk_playlist_song` (`playlist_id`, `song_id`, `source`),
                                  KEY `idx_playlist_id` (`playlist_id`),
                                  KEY `idx_song_id` (`song_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='歌单-歌曲关联表';
 
-INSERT INTO `song`
-(`name`, lyricist, composer, lyrics, audio_url, mv_url, mv_description, mv_author, category, cover_url)
+
+-- 6. 初始化数据（测试用）
+
+-- 6.1 插入测试用户
+INSERT INTO `user` (`username`, `password`, `nickname`, `email`, `bio`, `gender`, `hobby`, `avatar`)
 VALUES
-    ('晴天', '周杰伦', '周杰伦', '故事的小黄花，从出生那年就飘着', '/audio/qt.mp3', '/mv/qt.mp4', '校园情歌MV', '周杰伦', '流行', '/cover/qt.jpg'),
-    ('稻香', '周杰伦', '周杰伦', '还记得家是唯一的城堡', '/audio/dx.mp3', '/mv/dx.mp4', '治愈乡村MV', '周杰伦', '治愈', '/cover/dx.jpg'),
-    ('孤勇者', '唐恬', '钱雷', '爱你孤身走暗巷，爱你不跪的模样', '/audio/gyz.mp3', '/mv/gyz.mp4', '动画双城之战主题曲', '陈奕迅', '励志', '/cover/gyz.jpg'),
-    ('七里香', '方文山', '周杰伦', '窗外的麻雀，在电线杆上多嘴', '/audio/qlx.mp3', NULL, NULL, '周杰伦', '流行', '/cover/qlx.jpg');
+    ('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iK2xoXh2', '管理员', 'admin@music.com', '我是管理员', 1, '音乐/读书', '/avatar/admin.jpg'),
+    ('test', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iK2xoXh2', '测试用户', 'test@music.com', '测试账号', 0, '听歌/打篮球', '/avatar/test.jpg');
+-- 密码都是: 123456 （BCrypt 加密）
 
-INSERT INTO `playlist` (user_id, `name`)
-VALUES
-    (1, '周董精选集'),
-    (1, '治愈励志歌单');
-
-CREATE TABLE IF NOT EXISTS `category` (
-                                          `id` bigint NOT NULL AUTO_INCREMENT,
-                                          `name` varchar(50) NOT NULL COMMENT '分类名称',
-    `description` varchar(255) DEFAULT NULL COMMENT '分类描述',
-    `icon` varchar(255) DEFAULT NULL COMMENT '图标URL',
-    `sort_order` int DEFAULT '0' COMMENT '排序',
-    `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
-    `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_name` (`name`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='歌曲分类表';
-
-ALTER TABLE `song` ADD COLUMN `category_id` bigint DEFAULT NULL COMMENT '分类ID';
-ALTER TABLE `song` ADD INDEX `idx_category_id` (`category_id`);
-
+-- 6.2 插入分类数据
 INSERT INTO `category` (`name`, `description`, `sort_order`) VALUES
                                                                  ('流行', '流行音乐', 1),
                                                                  ('摇滚', '摇滚音乐', 2),
@@ -92,30 +115,8 @@ INSERT INTO `category` (`name`, `description`, `sort_order`) VALUES
                                                                  ('说唱', '嘻哈说唱', 6),
                                                                  ('古典', '古典音乐', 7);
 
-SELECT * FROM song WHERE name LIKE '%周杰伦%' OR lyricist LIKE '%周杰伦%';
 
-UPDATE `song` SET `category_id` = 1 WHERE `id` IN (1, 4);
-UPDATE `song` SET `category_id` = 2 WHERE `id` = 2;
-
-ALTER TABLE `playlist` ADD COLUMN `cover_url` varchar(255) DEFAULT NULL;
-ALTER TABLE `playlist` ADD COLUMN `description` varchar(500) DEFAULT NULL;
-
-INSERT INTO playlist_song (playlist_id, song_id)
-VALUES
-    (1, 1),
-    (1, 2),
-    (1, 3),
-    (1, 4);
-INSERT INTO playlist_song (playlist_id, song_id) VALUES (2,1),(2,3);
-INSERT INTO playlist_song (playlist_id, song_id) VALUES (3,2),(3,4);
-INSERT INTO playlist_song (playlist_id, song_id) VALUES (1, 5);
-DELETE FROM playlist_song WHERE playlist_id = 1 AND song_id = 4;
-
-ALTER TABLE playlist_song MODIFY song_id VARCHAR(64);
-
-ALTER TABLE playlist_song ADD COLUMN source VARCHAR(20) DEFAULT 'local' COMMENT 'local:本地, tencent:QQ音乐';
-
--- 增加第三方额外信息字段
-ALTER TABLE playlist_song ADD COLUMN external_name VARCHAR(200) NULL;
-ALTER TABLE playlist_song ADD COLUMN external_artist VARCHAR(200) NULL;
-ALTER TABLE playlist_song ADD COLUMN external_cover VARCHAR(500) NULL;
+-- 6.3 插入歌单
+INSERT INTO `playlist` (`user_id`, `name`, `description`, `cover_url`) VALUES
+                                                                           (1, '周董精选集', '周杰伦经典歌曲合集', '/cover/playlist_zhoudong.jpg'),
+                                                                           (1, '治愈励志歌单', '听完充满力量', '/cover/playlist_cure.jpg');
